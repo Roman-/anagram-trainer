@@ -3,10 +3,23 @@ import { defineStore } from 'pinia'
 import words from "@/assets/wordsets/eng_nouns.json"
 import {createHardAnagram} from "@/js/anagrams";
 
-const localStorageKey = "anagrams_store_key"
+const localStorageKey = "anagrams_store_key_2"
+
+// create word map: "sorted-letters" -> ["word1", "word2", …]
+export const wordMap = (() => {
+  const map = {}
+  for (const w of words) {
+    const key = w.split('').sort().join('')
+    if (!map[key]) map[key] = []
+    map[key].push(w)
+  }
+  return map
+})()
+console.log("wordMap", wordMap)
 
 /*
-* word : "word"
+* word : "word"  // the original word
+* sortedLetters : "dorw"
 * anagram: "orwd"
 * hintSize: 0 // if no hint is taken
 * */
@@ -35,10 +48,12 @@ export const useGameStore = defineStore('game', () => {
   const newGame = (wordLength) => {
     // filter words array by wordLength
     store.word = getWordOfLength(wordLength)
+    store.sortedLetters = store.word.split('').sort().join('')
     store.anagram = createHardAnagram(store.word)
+    store.anagramSorted = store.anagram.split('').sort().join('')
     store.whenStarted = Date.now()
     store.hintSize = 0
-    console.log(store.anagram + "->" + store.word);
+    console.log(store.anagram + "->" + store.word, wordMap[store.anagramSorted]);
   }
 
   const takeHint = () => {

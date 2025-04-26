@@ -1,6 +1,6 @@
 <script setup>
 
-import {useGameStore} from "@/stores/GameStore";
+import {useGameStore, wordMap} from "@/stores/GameStore";
 import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import "animate.css"
 import {useHistoryStore} from "@/stores/HistoryStore";
@@ -61,8 +61,9 @@ const startNextGame = () => {
 
 watch(guess, () => {
   guess.value = guess.value.replaceAll(/\W/g, '').toLowerCase()
-  if (guess.value === game.store.word) {
-    history.push(game.store)
+  const words = wordMap[game.store.anagramSorted]
+  if (words.includes(guess.value)) {
+    history.push({store : game.store, guess: guess.value})
     guess.value = ""
     if (!session.isLastGame()) {
       party.confetti(input.value)
@@ -117,7 +118,7 @@ const showedAnagram = computed(() => {
           <button
               class="btn btn-outline-warning"
               @click="takeHint"
-              :disabled="game.store.hintSize >= game.store.word.length - 1">
+              :disabled="!game.store.word || game.store.hintSize >= game.store.word.length - 1">
             <div>Hint</div>
             <small>(space)</small>
           </button>

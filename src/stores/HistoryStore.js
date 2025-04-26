@@ -12,12 +12,12 @@ export const useHistoryStore = defineStore('history', () => {
     localStorage.setItem(localStorageKey, JSON.stringify(store))
   }, {deep: true})
 
-  const push = (item) => {
+  const push = (storeAndGuess) => {
     store.items.push({
-      "anagram": item.anagram,
-      "word": item.word,
-      "timeMs": new Date() - item.whenStarted,
-      "hintSize" : item.hintSize
+      "anagram": storeAndGuess.store.anagram,
+      "word": storeAndGuess.guess,
+      "timeMs": new Date() - storeAndGuess.store.whenStarted,
+      "hintSize" : storeAndGuess.store.hintSize
     })
   }
 
